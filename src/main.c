@@ -8,5 +8,7 @@ int main(int argc, char *argv[])
 {
   N8_VM *vm = malloc(sizeof(N8_VM));
   print_stack(vm);print_registers(vm);
+  
+  free(vm);
   return 0;
 }

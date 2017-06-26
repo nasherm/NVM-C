@@ -134,7 +134,7 @@ void branch_constrol(N8_VM *vm, INSTRUCTION_SET instr)
     case BRZ:
       if(get_flag(vm, N8_Zero)) vm->PC = branch_address;
       else ++vm->PC;
-      break
+      break;
     // BRZ and BRV
     default:
       ++vm->PC;
