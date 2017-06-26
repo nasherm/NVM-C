@@ -24,7 +24,7 @@ typedef struct{
   uint8_t PC;
   uint8_t CC;
 
-  uint8_t MEMORY[256];
+  uint8_t memory[256];
 }N8_VM
 
 /*
