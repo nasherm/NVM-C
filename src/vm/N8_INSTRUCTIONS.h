@@ -26,4 +26,4 @@ typedef enum{
   SETX = 0x13, // Set register X to argument
   SETY = 0x14, // Set register Y to argument
   HLT  = 0x15  // Stop the programs
-}INSTRUCTION_SET
+}INSTRUCTION_SET;

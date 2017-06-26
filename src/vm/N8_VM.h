@@ -25,16 +25,16 @@ typedef struct{
   uint8_t CC;
 
   uint8_t memory[256];
-}N8_VM
+}N8_VM;
 
 /*
  * Flags set on different operations
  *
 */
 typedef enum{
-  N8_Zero     = 0
-  N8_Carry    = 1
-  N8_Overflow = 2
+  N8_Zero     = 0,
+  N8_Carry    = 1,
+  N8_Overflow = 2,
   N8_Neg      = 3
 }N8_Flags;
 
@@ -44,10 +44,10 @@ typedef enum{
 
  typedef enum{
    ADD, SUB, MUL, DIV
- }N8_OP
+ }N8_OP;
 
  // TODO: These visulisation functions
- int print_stack(const N8_VM *vm);
- int print_registers(const N8_VM *vm);
+ void print_stack(const N8_VM *vm);
+ void print_registers(const N8_VM *vm);
  void init_VM(N8_VM *vm);
  int fetch_decode_exe(const N8_VM *vm, const char instr);
