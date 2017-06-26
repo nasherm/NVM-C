@@ -1,6 +1,6 @@
 /*
  * Author: Nashe Mncube
- * Virtual manager definitions.
+ * Virtual machine definitions.
 */
 
 #include <stdint.h>
@@ -8,7 +8,7 @@
 
 /*
  * Definition of the virtual machine. This machine is held as a struct with
- * 7 registers. There are 3 registers which are program specific. The SP
+ * 7 registers. There are 4 registers which are program specific. The SP
  * holds the value of the stack pointer, PC holds the program counter and
  * the CC register holds the flags set on operation.
  *

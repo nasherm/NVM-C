@@ -1,6 +1,7 @@
 /*
  * Author: Nashe Mncube
  * The instruction set for this 8-bit architecture has 15 instructions.
+ * More to follow to add functionality
 */
 
 

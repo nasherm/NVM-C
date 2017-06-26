@@ -43,7 +43,7 @@ void print_registers(const N8_VM *vm){
 }
 
 /*
- * Pushes register or immediate values onto the stack based
+ * Pushes register or immediate values onto the stack based on op
  */
 void push_to_stack(N8_VM *vm, INSTRUCTION_SET op, uint8_t reg)
 {
