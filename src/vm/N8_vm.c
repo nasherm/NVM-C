@@ -24,12 +24,8 @@ void init_VM(N8_VM *vm){
   vm->CC = 0;
 }
 
-void print_stack(const N8_VM *vm){
-  uint16_t sp = MAX-STACK_SIZE;
-  while(sp <= MAX){
-    printf("%02x: %02x\n", sp, vm->memory[vm->SP]);
-    sp++;
-  }
+void print_stack_head(const N8_VM *vm){
+  printf("%02x: %02x\n", vm->SP, vm->memory[vm->SP]);
 }
 
 void print_registers(const N8_VM *vm){
@@ -70,7 +66,7 @@ void pop_from_stack(N8_VM *vm, INSTRUCTION_SET instr)
     fprintf(stderr, "No values on stack\n");
     exit(3);
   }
-  uint8_t stack_value = vm->memory[++vm->SP];
+  uint8_t stack_value = vm->memory[vm->SP];
 
   switch(instr){
     case POPA: vm->A = stack_value; break;
@@ -79,6 +75,7 @@ void pop_from_stack(N8_VM *vm, INSTRUCTION_SET instr)
     case POPY: vm->Y = stack_value; break;
     default: fprintf(stderr, "Bad call to pop. No destination register\n"); exit(3);
   }
+  vm->SP++;
 }
 
 /*
@@ -116,29 +113,30 @@ void add_to_register(N8_VM *vm, uint8_t *dest_reg)
 /*
  * Returns the flag value
  */
-uint8_t get_flag(const N8_VM *vm, N8_Flags f){
-  return vm->CC >> f;
+void handle_conditional_branch(N8_VM *vm, N8_Flags f, uint8_t branch_address){
+  uint8_t flag_value = vm->CC >> f & 0x01; // Mask relevant flag bit with one
+
+  if(flag_value == 0x01)
+    vm->PC = branch_address;
+  else
+    ++vm->PC;
 }
 /*
  * Handles conditional branches. Jumps to destination address given by input
  */
-void branch_constrol(N8_VM *vm, INSTRUCTION_SET instr)
+void branch_control(N8_VM *vm, INSTRUCTION_SET instr)
 {
   uint8_t branch_address = vm->memory[++vm->PC];
   if(branch_address >= MAX-STACK_SIZE){
-    //Must keep stack protected
+    //Must keep stack protected, as well as preventing overflow
     fprintf(stderr, "Memory access fault, trying to acess prohibited memory\n");
     exit(5);
   }
   switch(instr){
-    case BRZ:
-      if(get_flag(vm, N8_Zero)) vm->PC = branch_address;
-      else ++vm->PC;
-      break;
-    // BRZ and BRV
-    default:
-      ++vm->PC;
-      break;
+    case BRZ: handle_conditional_branch(vm, N8_Zero, branch_address);     break;
+    case BRV: handle_conditional_branch(vm, N8_Overflow, branch_address); break;
+    case BRN: handle_conditional_branch(vm, N8_Neg, branch_address);      break;
+    default:  ++vm->PC; break;
   }
 }
 
@@ -154,10 +152,50 @@ void set_flag(N8_VM *vm, N8_Flags flag)
 /*
  * Sets the necessary flags on operations based on results and input arguments
  *
- */
 
-void set_flags_control(N8_VM *vm, uint8_t result,const uint8_t op1, const uint8_t op2)
+
+void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
+                      const uint8_t op2, N8_OP operation)
 {
-  if(result == ZERO)
-    set_flag(vm, N8_Overflow);
+  if(result )
+}
+*/
+
+bool fetch_decode_exe(N8_VM *vm, const uint8_t instr){
+  switch(instr){
+    case PSHi: push_to_stack(vm, PSHi, NULL); break;
+    case PSHA: push_to_stack(vm, PSHA, vm->A); break;
+    case PSHB: push_to_stack(vm, PSHB, vm->B); break;
+    case PSHX: push_to_stack(vm, PSHX, vm->X); break;
+    case PSHY: push_to_stack(vm, PSHY, vm->Y); break;
+
+    case ADDA: add_to_register(vm, &vm->A); break;
+    case ADDB: add_to_register(vm, &vm->B); break;
+    case ADDX: add_to_register(vm, &vm->X); break;
+    case ADDY: add_to_register(vm, &vm->Y); break;
+
+    case BRZ: branch_control(vm, BRZ); break;
+    case BRV: branch_control(vm, BRV); break;
+    case BRN: branch_control(vm, BRN); break;
+
+    case POPA: pop_from_stack(vm, POPA); break;
+    case POPB: pop_from_stack(vm, POPB); break;
+    case POPX: pop_from_stack(vm, POPX); break;
+    case POPY: pop_from_stack(vm, POPY); break;
+
+    case SETA: set_register(vm, SETA); break;
+    case SETB: set_register(vm, SETB); break;
+    case SETX: set_register(vm, SETX); break;
+    case SETY: set_register(vm, SETY); break;
+
+    case HLT:
+      fprintf(stdout, "Program halted\n");
+      return false;
+    default:
+      fprintf(stderr, "Instruction failed to decode\n");
+      exit(-1);
+      break;
+  }
+  vm->PC++;
+  return true;
 }

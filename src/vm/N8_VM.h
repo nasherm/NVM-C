@@ -4,6 +4,7 @@
 */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 
 /*
@@ -47,7 +48,7 @@ typedef enum{
  }N8_OP;
 
  // TODO: These visulisation functions
- void print_stack(const N8_VM *vm);
+ void print_stack_head(const N8_VM *vm);
  void print_registers(const N8_VM *vm);
  void init_VM(N8_VM *vm);
- int fetch_decode_exe(const N8_VM *vm, const char instr);
+ bool fetch_decode_exe(N8_VM *vm, const uint8_t instr);
