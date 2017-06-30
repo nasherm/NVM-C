@@ -26,5 +26,9 @@ typedef enum{
   SETB = 0x12, // Set register B to argument
   SETX = 0x13, // Set register X to argument
   SETY = 0x14, // Set register Y to argument
-  HLT  = 0x15  // Stop the programs
+  SUBA = 0x15, // Subs argument from register A (negative numbers represented with twos complement)
+  SUBB = 0x16, // Subs argument from register B
+  SUBX = 0x17, // Subs argument from register X
+  SUBY = 0x18, // Subs argument from register Y
+  HLT  = 0x19  // Stop the programs
 }INSTRUCTION_SET;

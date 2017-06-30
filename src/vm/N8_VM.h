@@ -49,6 +49,7 @@ typedef enum{
 
  // TODO: These visulisation functions
  void print_stack_head(const N8_VM *vm);
+ void print_stack(const N8_VM *vm);
  void print_registers(const N8_VM *vm);
  void init_VM(N8_VM *vm);
  bool fetch_decode_exe(N8_VM *vm, const uint8_t instr);

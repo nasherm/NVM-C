@@ -8,11 +8,13 @@
 #define MAX 255
 #define STACK_SIZE 50
 //TODO: Setting flags function
+//TODO: Arithmetic logic support for negative numbers
 //DONE: POP from stack functions
 //DONE: Setting Register functions
-//TODO: Halt computing functions
-//TODO: The fetch_decode_exe function
+//DONE: Halt computing functions
+//DONE: The fetch_decode_exe function
 //TODO: Parser for input files
+//TODO: Testing
 
 void init_VM(N8_VM *vm){
   vm->A = 0;
@@ -26,6 +28,14 @@ void init_VM(N8_VM *vm){
 
 void print_stack_head(const N8_VM *vm){
   printf("%02x: %02x\n", vm->SP, vm->memory[vm->SP]);
+}
+
+void print_stack(const N8-VM *vm){
+  uint8_t sp = vm->SP;
+  while(sp <= 255){
+    printf("%02x: %02x\n", sp, vm->memory[sp]);
+    sp++;
+  }
 }
 
 void print_registers(const N8_VM *vm){
@@ -106,7 +116,8 @@ void add_to_register(N8_VM *vm, uint8_t *dest_reg)
 
   *dest_reg += val;
   result = *dest_reg;
-  //set_flags_control;
+
+  set_flags_control(vm, result, prev_reg_value, ADD);
 
 }
 
@@ -152,14 +163,23 @@ void set_flag(N8_VM *vm, N8_Flags flag)
 /*
  * Sets the necessary flags on operations based on results and input arguments
  *
-
-
-void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
-                      const uint8_t op2, N8_OP operation)
-{
-  if(result )
-}
 */
+void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
+                       N8_OP operation)
+{
+  switch(operation){
+    case ADD: // Op1 is the previous value of result in add operation
+      if(result <= op1) set_flag(vm, N8_Overflow);
+      else if(result == 0) set_flag(vm, N8_Zero);
+    /*case SUB: // Op1 is the previous value, as in addition
+      if()*/
+    default:
+      fprint("Invalid arithmetic operation\n");
+      exit(6);
+      break;
+  }
+}
+
 
 bool fetch_decode_exe(N8_VM *vm, const uint8_t instr){
   switch(instr){
