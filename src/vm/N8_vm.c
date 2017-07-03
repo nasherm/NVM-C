@@ -16,6 +16,7 @@
 //TODO: Parser for input files
 //TODO: Testing
 
+void set_flags_control(N8_VM *vm, const uint8_t result, const uint8_t op1, N8_OP operation);
 void init_VM(N8_VM *vm){
   vm->A = 0;
   vm->B = 0;
@@ -26,12 +27,8 @@ void init_VM(N8_VM *vm){
   vm->CC = 0;
 }
 
-void print_stack_head(const N8_VM *vm){
-  printf("%02x: %02x\n", vm->SP, vm->memory[vm->SP]);
-}
-
-void print_stack(const N8-VM *vm){
-  uint8_t sp = vm->SP;
+void print_stack(const N8_VM *vm){
+  uint16_t sp = MAX-STACK_SIZE;
   while(sp <= 255){
     printf("%02x: %02x\n", sp, vm->memory[sp]);
     sp++;
@@ -59,12 +56,13 @@ void push_to_stack(N8_VM *vm, INSTRUCTION_SET op, uint8_t reg)
   }
   switch(op){
     case PSHi:
-      vm->memory[--vm->SP] = vm->memory[++vm->PC]; //Get next value in mem(the operand)
+      vm->memory[vm->SP] = vm->memory[++vm->PC]; //Get next value in mem(the operand)
       break;
     default:
-      vm->memory[--vm->SP] = reg;
+      vm->memory[vm->SP] = reg;
       break;
   }
+  vm->SP--;
 }
 
 /*
@@ -164,8 +162,7 @@ void set_flag(N8_VM *vm, N8_Flags flag)
  * Sets the necessary flags on operations based on results and input arguments
  *
 */
-void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
-                       N8_OP operation)
+void set_flags_control(N8_VM *vm, const uint8_t result, const uint8_t op1, N8_OP operation)
 {
   switch(operation){
     case ADD: // Op1 is the previous value of result in add operation
@@ -174,7 +171,7 @@ void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
     /*case SUB: // Op1 is the previous value, as in addition
       if()*/
     default:
-      fprint("Invalid arithmetic operation\n");
+      fprintf(stderr, "Invalid arithmetic operation\n");
       exit(6);
       break;
   }
@@ -183,7 +180,7 @@ void set_flags_control(N8_VM *vm, const uint8_t result,const uint8_t op1,
 
 bool fetch_decode_exe(N8_VM *vm, const uint8_t instr){
   switch(instr){
-    case PSHi: push_to_stack(vm, PSHi, NULL); break;
+    case PSHi: push_to_stack(vm, PSHi, ZERO); break;
     case PSHA: push_to_stack(vm, PSHA, vm->A); break;
     case PSHB: push_to_stack(vm, PSHB, vm->B); break;
     case PSHX: push_to_stack(vm, PSHX, vm->X); break;
